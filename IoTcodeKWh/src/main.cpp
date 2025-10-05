@@ -1,49 +1,44 @@
 #include <Arduino.h>
 
+float Sensibilidad = 0.066; //sensibilidad en V/A para nustro sensor
+/*
+30A - 66mV/A - 0.066 v/A
 
-// Sensibilidad del sensor en V/A
-//float SENSIBILITY = 0.185;   // Modelo 5A
-//float SENSIBILITY = 0.100; // Modelo 20A
-float SENSIBILITY = 0.066; // Modelo 30A
-
-int SAMPLESNUMBER = 100;
-
-// === DECLARACIÓN ANTICIPADA (¡SOLUCIÓN!) ===
-float getCorriente(int samplesNumber); 
-// ===========================================
-
-void setup() 
-{
-  Serial.begin(9600);
+v = Im + 2.5 //m : sensibilidad
+Despejando la ecuación
+I = (v - 2.5)/m
+*/
+void setup() {
+    Serial.begin(9600);
 }
 
-void printMeasure(String prefix, float value, String postfix)
-{
-  Serial.print(prefix);
-  Serial.print(value, 3);
-  Serial.println(postfix);
+void loop() {
+    float Ip = obtener_corriente(); //obtenemos la corriente pico
+    float Irms = Ip * 0.707; // Intensidad RMS = Ipico/(2 elevado a 1/2)
+    float P = Irms * 220.0; // P = I * V watts
+    
+    Serial.print("Ip: "); Serial.print(Ip,3); Serial.print("A "); 
+    Serial.print("Irms: "); Serial.print(Irms,3); Serial.print("A "); 
+    Serial.print("Potencia: "); Serial.print(); Serial.print("W"); 
+    delay(500);
+    
 }
 
-void loop()
-{
-  float current = getCorriente(SAMPLESNUMBER);
-  float currentRMS = 0.707 * current;
-  float power = 230.0 * currentRMS;
-
-  printMeasure("Intensidad: ", current, "A ,");
-  printMeasure("Irms: ", currentRMS, "A ,");
-  printMeasure("Potencia: ", power, "W");
-  delay(1000);
+float obtener_corriente() {
+    float voltajeSensor;
+    float corriente = 0;
+    long tiempo = millis();
+    float Imax=0;
+    float Imin=0;
+    while(millis() - tiempo<500){
+        voltajeSensor = analogRead(A0) * (5.0 / 1023.0); // lectura
+        corriente = 0.9*corriente+0.1*((voltajeSensor-2.5)/Sensibilidad); // Ecuación para obtener la corriente
+        if(corriente>Imax){
+        Imax = corriente;
+    } 
+    if(corriente<Imin){
+    Imin = corriente;
 }
-
-float getCorriente(int samplesNumber)
-{
-  float voltage;
-  float corrienteSum = 0;
-  for (int i = 0; i < samplesNumber; i++)
-  {
-    voltage = analogRead(A0) * 5.0 / 1023.0;
-    corrienteSum += (voltage - 2.5) / SENSIBILITY;
-  }
-  return(corrienteSum / samplesNumber);
+}
+return((Imax-Imin)/2);
 }
