@@ -1,7 +1,7 @@
 // Sensibilidad del sensor en V/A
-float SENSIBILITY = 0.185;   // Modelo 5A
+//float SENSIBILITY = 0.185;   // Modelo 5A
 //float SENSIBILITY = 0.100; // Modelo 20A
-//float SENSIBILITY = 0.066; // Modelo 30A
+float SENSIBILITY = 0.066; // Modelo 30A
 
 int SAMPLESNUMBER = 100;
 
