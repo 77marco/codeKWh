@@ -62,4 +62,4 @@ float obtener_corriente() {
     return((Imax - Imin) / 2.0);
 }
 
-// Corriente Irms similar a amperimetro. Buen resultado con carga resistiva. 
+// Corriente Irms similar a amperimetro. Buen resultado con carga resistiva..
